@@ -1,0 +1,61 @@
+#|1|tam_reg|tamp_c1|c1|t_c2|c2|t_c3|c3|tc4|c4|tc5|c5|tc6|c6|tc7|c7|tc8|c8|tc9|c9|tc10|c10
+
+Para remover
+#|0|...
+
+Caso o espaço seja reaproveitado
+#|1|tam_regAtual-tamRegAntigo|...|#|0|Sobras
+
+
+A estrategia de reaproveitamento de espaço será First-Fit, pois em questão de tempo ela é a mais rápida.
+
+
+Como vai funcionar:
+
+Inserção:
+
+Ler o registro da mesma forma, que foi lido na outra parte, mas na hora de escrever muda:
+
+O que fazer:
+
+-Calcular o tamanho do registro, como:
+
+->10 * sizeof(int) = 40
+->20
+->tamanho dos campos
+
+-Verificar a existencia de remoção lógicas que podem ser reaproveitadas pelo registro de tamanho calculado
+
+-Caso exista: Insere na posição trocando 0 para 1, e realizar uma subtração entre o tamanho do registro atual e o que foi removido,
+colocar o registro, e caso o resultado da subtração for algum valor maior que 0, escrever apos o final do registro, isto, o arquivo deve ser aberto
+no modo rb+
+
+#|0|subtração-3-sizeof(int)-1|
+
+-Caso não exista:
+
+-Escrever o registro na ordem especificada acima, para isso pode-se abrir o arquivo do modo ab
+
+De qualquer modo, calcula-se o byte offset do #, isto é a posição do # e guarda no arquivo de chaves secundárias com o byte offset
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Remoção:
+
+-Realizar a busca sequencial da chave até encontrar o byte offset do registro que contenha a chave x,
+
+Como chave é o primeiro campo escrito, então ao ler o campo chave, caso for igual, volta sizeof(key)4+2*sizeof(int), e escreve 0 no lugar do 1, e também remove
+a chave do arquivo de indice que contenha o byte offset do registro
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+Busca:
+
+Busca pela chave secundária é igual
+
+Busca pela chave primária KEY, faz de forma sequencial, caso a chave for diferente, avança-se x posições que será dada pela conta:
+
+tamReg - 2 - sizeof(int) - sizeof(c1) + SEEK_CURR, que direciona para o próximo campo.
+
+--------------------------------------------------------------------------------------------------------------------------------------
