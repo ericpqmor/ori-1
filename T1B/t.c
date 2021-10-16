@@ -515,10 +515,13 @@ int insere(FILE *arquivo,Reg registro){
 
     if(!tamanho_disponivel(arquivo,registro.nome))
         return FALSE;
-
     int v[10];
     int tam;
     int indice; //guarda o byte offset
+
+    if(busca_key(arquivo,registro.key,&indice,&tam,registro.nome,FALSE)){
+        return FALSE;
+    }
     //Calcula o tamanho do registro e o tamanho de cada campo do registro
     calcula_tamanho(registro,v,&tam);
 
@@ -548,7 +551,7 @@ int insere(FILE *arquivo,Reg registro){
         //Agora temos que trabalhar na escrita do espaço restante
         if(restante != 0){//Isso significa que sobrou espaço suficiente para escrever o padrão, isso significa que tem pelo menos 9 bytes disponiveis
         
-            restante -= 1;
+            restante -= 8;
             escreve_arquivo(arquivo,registro,'0',v,restante,TRUE);
         }
 
@@ -650,9 +653,9 @@ int remove_logico(FILE *arquivo,long int key){
     //Função busca key, que retorna o byte offsett do registro
     if(!busca_key(arquivo,key,&pos,&tamanho,nome,FALSE))
         return FALSE;
+    
     //Chave foi encontrada, e na variavel pos, está o byte offset do registro
 
-    printf("%s\n",nome);
 
     arquivo = fopen(N_ARQUIVO,"rb+");
     fseek(arquivo,pos,SEEK_SET);
@@ -820,10 +823,10 @@ int  busca_fName(FILE *arquivo,char fName[10]){
         return FALSE;
     }
 
-    printf("Registro(s) com o nome: %s abaixo: ",registro.nome);
+    printf("Registro(s) com o nome: %s abaixo:\n",registro.nome);
     int cont=0;
     while(registro.i[cont] != -1){
-        //recupera_registro(arquivo,registro.i[cont]);
+        mostra_registro(arquivo,registro.i[cont],cont);
         cont++;
     }
     return TRUE;
@@ -843,7 +846,7 @@ int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int bo
 
     *pos = ftell(arquivo);//byteoffset 0
 
-    while(!achou && fread(&inicio_reg,sizeof(inicio_reg),1,arquivo)){
+    while(!achou && fread(&inicio_reg,sizeof(inicio_reg),1,arquivo) && inicio_reg == '#'){
 
         fread(&delimitador,sizeof(delimitador),1,arquivo);
         fread(&existe,sizeof(delimitador),1,arquivo);
@@ -864,6 +867,7 @@ int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int bo
             fread(&v,sizeof(int),1,arquivo);
             fread(&delimitador,sizeof(delimitador),1,arquivo);
             fread(&registro.key,v,1,arquivo);
+
             if(registro.key == key){
 
                 achou = TRUE;
@@ -890,16 +894,21 @@ int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int bo
                     mostra_registro(arquivo,*pos,contador);
                 }
             }
-
-            int pulo = tamanho- (2+sizeof(int)+sizeof(long int));
-            fseek(arquivo,pulo,SEEK_CUR);
-            contador++;
+            if(!achou){
+                int pulo = tamanho - (2+sizeof(int)+v);
+                fseek(arquivo,pulo,SEEK_CUR);
+            }
+                contador++;
+            
         }
         
         if(!achou)
             *pos = ftell(arquivo);      
     }
+
+
     if(!achou){
+        fclose(arquivo);
         return FALSE;
     }
 
@@ -976,7 +985,7 @@ void mostra_registro(FILE *arquivo,int byte_offset,int c){
 
 
             }
-            ml(c,1);
+            ml(c,0);
             printf("%c%c%c%c%d%c\n",inicio_reg,delimitador,existe,delimitador,tam,delimitador);
             print_reg(registro);
             ml(c,0);    
