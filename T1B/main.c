@@ -33,6 +33,14 @@ int main(){
 
     print_arq_secundario();
 
+    int pos,tam;
+    char nome[10];
+
+    if(busca_key(arquivo,378,&pos,&tam,nome,TRUE)){
+        printf("%d %s\n",tam,nome);
+    }
+
+
     return 0;
 
 }

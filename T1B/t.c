@@ -829,3 +829,157 @@ int  busca_fName(FILE *arquivo,char fName[10]){
     return TRUE;
 
 }
+
+int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int booleano){
+
+    char inicio_reg,delimitador,existe;
+    int v;
+    int tamanho;
+    Reg registro;
+    int contador=0;
+    int achou = FALSE;
+
+    arquivo = fopen(N_ARQUIVO,"rb");
+
+    *pos = ftell(arquivo);//byteoffset 0
+
+    while(!achou && fread(&inicio_reg,sizeof(inicio_reg),1,arquivo)){
+
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+        fread(&existe,sizeof(delimitador),1,arquivo);
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+        
+
+        fread(&tamanho,sizeof(int),1,arquivo);
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+
+        if(existe == '0'){
+            //Pular para o proximo registro, que estará na pos SEEK_CURR + TAM-1
+            fseek(arquivo,tamanho-1,SEEK_CUR);
+
+        }
+
+        else{
+            //Escreve o tamanho do campo
+            fread(&v,sizeof(int),1,arquivo);
+            fread(&delimitador,sizeof(delimitador),1,arquivo);
+            fread(&registro.key,v,1,arquivo);
+            if(registro.key == key){
+
+                achou = TRUE;
+                *tam = tamanho;
+
+                //Ler o campo nome
+
+                //Avançar lname
+                fread(&delimitador,sizeof(delimitador),1,arquivo);
+                fread(&v,sizeof(int),1,arquivo);
+
+                //Avança para o proximo campo(tam|lName|)
+                fseek(arquivo,v+2,SEEK_CUR);
+                
+                //Ler o campo name
+                fread(&v,sizeof(int),1,arquivo);
+                fread(&delimitador,sizeof(delimitador),1,arquivo);
+                fread(&registro.nome,v,1,arquivo);
+
+                strcpy(nome,registro.nome);  
+
+                if(booleano){
+                    fclose(arquivo);
+                    mostra_registro(arquivo,*pos,contador);
+                }
+            }
+
+            int pulo = tamanho- (2+sizeof(int)+sizeof(long int));
+            fseek(arquivo,pulo,SEEK_CUR);
+            contador++;
+        }
+        
+        if(!achou)
+            *pos = ftell(arquivo);      
+    }
+    if(!achou){
+        return FALSE;
+    }
+
+    if(achou && !booleano)
+        fclose(arquivo);
+
+    return TRUE;
+
+}
+
+void mostra_registro(FILE *arquivo,int byte_offset,int c){
+
+    char inicio_reg,delimitador,existe;
+    int v[10];
+    int tam;
+    Reg registro;
+
+    arquivo = fopen(N_ARQUIVO,"rb");
+    fseek(arquivo,byte_offset,SEEK_SET);
+
+    if(fread(&inicio_reg,sizeof(inicio_reg),1,arquivo)){
+
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+        fread(&existe,sizeof(delimitador),1,arquivo);
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+        
+
+        fread(&tam,sizeof(int),1,arquivo);
+        fread(&delimitador,sizeof(delimitador),1,arquivo);
+
+            for(int i=0;i<10;i++){
+                //Escreve o tamanho do campo
+                fread(&v[i],sizeof(int),1,arquivo);
+                fread(&delimitador,sizeof(delimitador),1,arquivo);
+                
+                switch (i){
+
+                case 0:
+                    fread(&registro.key,v[0],1,arquivo);
+                    break;
+                case 1:
+                    fread(&registro.lName,v[1],1,arquivo);
+                    break;
+                case 2:
+                    fread(&registro.nome,v[2],1,arquivo);
+                    break;
+                case 3:
+                    fread(&registro.adress.nro,v[3],1,arquivo);
+                    break;
+                case 4:
+                    fread(&registro.adress.rua,v[4],1,arquivo);
+                    break;
+                case 5:
+                    fread(&registro.adress.complemento,v[5],1,arquivo);
+                    break;
+                case 6:
+                    fread(&registro.city,v[6],1,arquivo);
+                    break;
+                case 7:
+                    fread(&registro.state,v[7],1,arquivo);
+                    break;
+                case 8:
+                    fread(&registro.cep,v[8],1,arquivo);
+                    break;
+                case 9:
+                    fread(&registro.phone,v[9],1,arquivo);
+                    break;
+                default:
+                    printf("ERRO\n");
+                    break;
+                }
+                if(i != 9)
+                    fread(&delimitador,sizeof(delimitador),1,arquivo);
+
+
+            }
+            ml(c,1);
+            printf("%c%c%c%c%d%c\n",inicio_reg,delimitador,existe,delimitador,tam,delimitador);
+            print_reg(registro);
+            ml(c,0);    
+    }
+    fclose(arquivo);
+}

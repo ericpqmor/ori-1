@@ -66,7 +66,7 @@ void ml(int valor,int x);
 void menu(int *v);
 
 //
-int  recupera_registro(FILE *arquivo,int valor);
+void mostra_registro(FILE *arquivo,int byte_offset,int c);
 int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int booleano);
 int  busca_fName(FILE *arquivo,char fName[10]);
 
