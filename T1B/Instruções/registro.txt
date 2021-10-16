@@ -30,11 +30,14 @@ O que fazer:
 colocar o registro, e caso o resultado da subtração for algum valor maior que 0, escrever apos o final do registro, isto, o arquivo deve ser aberto
 no modo rb+
 
-#|0|subtração-3-sizeof(int)-1|
+Pensa-se dessa maneira, todo registro, que tiver espaço sobrando deve ter escrito:
+#|0|20| -> Isso é do tamanho 4 + 4+ 1 = 9, logo todo registro que nao tiver tamanho igual, deve ser 9 bytes maior que o novo registro,
+logo a conta de subtração feita deve ser regRemovido - reginserido ou deve ser igual a 0, ou >=9, caso nao for, nao pode ser inserido nessa localidade.
+#|0|subtração-3-sizeof(int)-1|, mas tam, que será escrito, será no minimo igual a 8, pois o |(delimitador) conta como uma posição
 
 -Caso não exista:
 
--Escrever o registro na ordem especificada acima, para isso pode-se abrir o arquivo do modo ab
+-EScrever o registro na ordem especificada acima, para isso pode-se abrir o arquivo do modo ab
 
 De qualquer modo, calcula-se o byte offset do #, isto é a posição do # e guarda no arquivo de chaves secundárias com o byte offset
 
@@ -59,3 +62,33 @@ Busca pela chave primária KEY, faz de forma sequencial, caso a chave for difere
 tamReg - 2 - sizeof(int) - sizeof(c1) + SEEK_CURR, que direciona para o próximo campo.
 
 --------------------------------------------------------------------------------------------------------------------------------------
+
+
+Instruções para realizar a função busca_key:
+
+int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int booleano);
+
+
+Oque representa cada variavel:
+
+arquivo-Ponteiro para um arquivo
+key - representa a chave que quer ser buscada
+pos- uma variavel que foi passada por referencia, e representa o byte offset da chave que está sendo procurada, o byteofsset é o byte do #
+tam - tamanho do registro que contém a chave key, também passado como referencia
+nome- campo do registro com chave key, util para o processo de remoção no arquivo de chaves secundárias
+booleano - variavel que afirma se terá algum print ou não, útil para a remoção/inserção que chamam essa função para verificar a existencia da chave
+
+
+Como vai funcionar:
+
+Inicialmente, deve-se abrir o arquivo no modo r(O arquivo N_ARQUIVO), então inicia-se a leitura, do modo padrão igualmente ao que acontece na função leitura,
+entretanto como se quer a chave key, ela esta no primeiro campo do registro, logo é muito simples obté-la, deve-se ler:
+
+O #|1|tam|tam_key|KEY, caso for diferente de key, então deve-se avançar até o próximo registro, para isso pode-se ultilizar o campo tam, que representa o tamanho
+do registro em si, entretanto deve-se atentar que foi avançado alguns bytes, mais especificamente 2 + sizeof(int) + sizeof(long int), e assim fazer um
+pulo = tam - (2 + sizeof(int) + sizeof(long int))
+fseek(arquivo,pulo,SEEK_CURR)
+
+E então repetir o processo.
+
+Caso encontre a chave, deve se ler até o campo nome, lendo os tamanhos do campo, o campo nome é o terceiro campo do registro, e terminar

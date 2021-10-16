@@ -21,12 +21,14 @@ FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
 #define N_ARQUIVO "arquivo.bin"
 #define N_ARQUIVO_SECUNDARIO "arquivo_secundaria.bin"
 
+
+
 //Registro de tamanho fixo/campos de tamanho fixo
-typedef struct endereco {
+typedef struct endereco{
     char rua[21];
     int nro;
     char complemento[10];
-} add;
+}add;
 
 typedef struct Registro
 {
@@ -38,18 +40,21 @@ typedef struct Registro
     char state[3];
     char cep[10];//cep, dps trocar
     char phone[15];//phone, dps trocar
-} Reg;
+}Reg;
 
 typedef struct secundaria{
 
     char nome[10];
     int i[20];
 
-} cSec;
+}cSec;
+
+
 
 int criaArquivo(char *n_arq);
 
-void escreve_arquivo(FILE *arquivo,Reg registro,char existe,int v[],int tam);
+
+void escreve_arquivo(FILE *arquivo,Reg registro,char existe,int v[],int tam,int sobrouEspaco);
 void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe);
 void le_arquivo(FILE *arquivo);
 
@@ -60,12 +65,15 @@ void print_insercao();
 void ml(int valor,int x);
 void menu(int *v);
 
+//
 int  recupera_registro(FILE *arquivo,int valor);
-int  busca_key(FILE *arquivo,long int key,int *pos,int booleano);
+int  busca_key(FILE *arquivo,long int key,int *pos,int *tam,char nome[10],int booleano);
 int  busca_fName(FILE *arquivo,char fName[10]);
+
 
 //Remocao de registros
 int remove_logico(FILE *arquivo,long int key);
+
 
 //Remoção do arquivo de indices secundarios
 void remove_arq_secundario(FILE *arquivo,char fName[10],int indice);
@@ -76,7 +84,7 @@ int tamanho_disponivel(FILE *arquivo,char fName[10]);
 int insere(FILE *arquivo,Reg registro);
 
 //Verifica remoção lógica
-int verifica(FILE *arquivo);
+int verifica(FILE *arquivo,int tamanho,int *pos,int *restante);
 
 //Inserção do arquivo de indices primarios
 
@@ -85,5 +93,7 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
 void ajusta_insercao_secundario(FILE *arquivo,int pos);
 int compara(char n[10],char p[10]);
 
+
 //Funções auxiliares
 void print_arq_secundario();
+void calcula_tamanho(Reg registro,int v[],int *tam);
