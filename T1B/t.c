@@ -758,3 +758,74 @@ void print_arq_secundario(){
     }
     fclose(arquivo);
 }
+
+/*
+13.As funções abaixo são funções relacionadas a busca, tanto busca de chave secundaria, como busca de chave primaria
+*/
+
+int  busca_fName(FILE *arquivo,char fName[10]){
+    
+    printf("Procurando pelo nome %s\n\n",fName);
+
+    cSec registro;
+    char existe;
+    char delimitador;
+    int achou = FALSE;
+    int fim = FALSE;
+
+    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+    if(arquivo == NULL){
+        printf("OPS, algo deu errado, encerrando a execucao...\n");
+        exit(1);
+    }
+
+    //Determinar a quantidade de itens inseridos
+    fseek(arquivo,0,SEEK_END);
+    int pos = ftell(arquivo);
+    fseek(arquivo,0,SEEK_SET);
+    int qtdItens = pos / (sizeof(cSec)+3);
+
+    int e = -1;
+    int d = qtdItens;
+    int m = (e+d)/2;
+
+    int pulo = sizeof(cSec)+3;
+    fseek(arquivo,m*pulo,SEEK_SET);
+
+    while(!fim && !achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& 
+    (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(cSec),1,arquivo) == TRUE)){
+
+            int c = compara(fName,registro.nome);
+            if(c < 0){
+                d = m;
+            }
+            else if(c > 0){
+                e = m;
+            }
+            else{
+                if(existe == '1')
+                achou = TRUE;
+                else
+                fim = TRUE;
+            }
+
+            if(e >= d-1)
+                fim = TRUE;
+
+            m = (e+d)/2;
+            fseek(arquivo,m*pulo,SEEK_SET);
+    }
+    fclose(arquivo);
+    if(!achou || fim){
+        return FALSE;
+    }
+
+    printf("Registro(s) com o nome: %s abaixo: ",registro.nome);
+    int cont=0;
+    while(registro.i[cont] != -1){
+        //recupera_registro(arquivo,registro.i[cont]);
+        cont++;
+    }
+    return TRUE;
+
+}
