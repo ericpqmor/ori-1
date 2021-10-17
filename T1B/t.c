@@ -26,12 +26,12 @@ int criaArquivo(char *n_arq){
 void menu(int *v){
 
     printf("\n----------------MENU---------------------------------------------\n");
-    printf("0)Criar arquivo\n1)Inserir\n2)Mostrar todos os registros\n3)Mostrar registro n\n4)Mostrar registro com a KEY x\n5)Mostrar registro com FNAME s\n6)Remover registro\n7)Sair\n");
+    printf("0)Criar arquivo\n1)Inserir\n2)Mostrar todos os registros\n3)Mostrar registro com a KEY x\n4)Mostrar registro com FNAME s\n5)Remover registro\n6)Sair\n");
     ml(0,0);
     printf("Digite o digito:");
     scanf("%d",v);
 
-    if((*v)<0 || (*v)>7){
+    if((*v)<0 || (*v)>6){
         printf("Digito invalido\n");
         menu(v);
     }
@@ -164,6 +164,7 @@ void le_arquivo(FILE *arquivo){
 
         if(existe == '0'){
             //Pular para o proximo registro, que estará na pos SEEK_CURR + TAM-1
+            printf("%c%c%c%c%d%c\n",inicio_reg,delimitador,existe,delimitador,tam,delimitador);
             fseek(arquivo,tam-1,SEEK_CUR);
 
         }
