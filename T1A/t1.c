@@ -83,7 +83,7 @@ void le_arquivo(FILE *arquivo){
     //Arquivo necessariaente precisa estar em modo de leitura
     while( (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
         if(delimitador == '|' && existe == '1'){
-            ml(contador+1,TRUE);
+            ml(contador,TRUE);
             print_reg(registro);
             ml(contador,FALSE);
             sleep(1);
@@ -138,7 +138,7 @@ int recupera_registro(FILE *arquivo,int valor){
      while(!achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
         if(delimitador == '|' && existe == '1' && contador == valor){
             printf("\nRegistro encontrado:\n");
-            ml(contador+1,TRUE);
+            ml(contador,TRUE);
             print_reg(registro);
             ml(contador,FALSE);
             sleep(1);
@@ -178,7 +178,7 @@ int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
             
             if(booleano){
             printf("\nChave encontrada:\n");
-            ml(contador+1,TRUE);
+            ml(contador,TRUE);
             print_reg(registro);
             ml(contador,FALSE);
             sleep(1);

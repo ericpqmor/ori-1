@@ -77,6 +77,9 @@ int main(){
             
             if(!remove_logico(arquivo,key))
                 printf("\nOPS, algo deu errado, nao existe a chave %ld...\n",key);
+            else{
+                printf("Registro com a chave %ld removido\n",key);
+            }
         }
 
         else if(continuar == 7)
