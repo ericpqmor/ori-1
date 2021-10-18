@@ -1,3 +1,14 @@
+/**
+NOME: Gabriel Meirelles Carvalho Orlando
+RA: 790728
+
+NOME: Eric Pereira Queiroz Moreira		
+RA: 799662
+
+CURSO: Ciencia da Computação
+DATA: 19/10/2021
+FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
+*/
 #include "t1.h"
 
 int main(){
@@ -9,11 +20,15 @@ int main(){
 
     int continuar = 0;
     FILE *arquivo = malloc(sizeof(FILE*));
+
+    //Laço principal
     while(continuar != 7)
     {
        
+        //Entrada da opção
         menu(&continuar);
 
+        //Cria o arquivo
         if(continuar == 0){
             if(criaArquivo(N_ARQUIVO))
                 printf("Arquivo criado com sucesso\n");
@@ -23,6 +38,7 @@ int main(){
             }
         }
 
+        //Insere no arquivo um registro lido
         else if(continuar == 1){
             print_insercao();
             scanf("%*c%[^\n]",string);
@@ -37,10 +53,13 @@ int main(){
             }
         }
 
+        //Mostra os registro
         else if(continuar == 2){
             printf("\nRegistros do arquivo %s\n",N_ARQUIVO);
             le_arquivo(arquivo);
         }
+
+        //Mostra o registro n
         else if(continuar==3){
             printf("Digite o numero do registro:");
             int nReg;
@@ -49,6 +68,8 @@ int main(){
             if(!recupera_registro(arquivo,nReg))
                 printf("\nOPS, algo deu errado, nao existe o registro %d...\n",nReg);
         }
+
+        //Busca o registro de chave key
         else if(continuar == 4){
             printf("Digite o numero da chave:");
             long int key;
@@ -59,6 +80,8 @@ int main(){
             if(!busca_key(arquivo,key,&pos,TRUE))
                 printf("\nOPS, algo deu errado, nao existe a chave %ld...\n",key);
         }
+
+        //Busca o registro com a chave secundária fName
         else if(continuar == 5){
             printf("Digite o primeiro nome:");
             char nome[10];
@@ -69,6 +92,7 @@ int main(){
                 printf("\nOPS, algo deu errado, nao existe o nome %s...\n",nome);
         }
 
+        //Remove um registro
         else if(continuar == 6){
             printf("Digite a chave para remover:");
             long int key;
@@ -82,11 +106,15 @@ int main(){
             }
         }
 
+        //Encerra a execução
         else if(continuar == 7)
             printf("\nEncerrando o programa...\n");
     }
     
+    //Exibe a lista de chaves secundárias
     print_arq_secundario();
+
+    //Libera o arquivo
     free(arquivo);
     arquivo = NULL;
     return 0;
