@@ -64,17 +64,22 @@ void ml(int valor,int x){
 }
 
 /*
-3.As quatro funções abaixo são primitivas, uma lê o arquivo de dados principal, a as outras três, escrevem da forma desejado nos arquivos
+3.As três funções abaixo são primitivas, uma lê o arquivo de dados principal, a as outras duas, escrevem da forma desejado nos arquivos
 */
+
+//Função: Ler os registros que existem logicamente de maneira sequencial, e exibi-los na tela
 void le_arquivo(FILE *arquivo){
 
+    //Declaração das variáveis locais
     Reg registro;
     int contador=0;
     char existe;
     char delimitador;
 
+    //Abertura do arquivo principal em modo r
     arquivo = fopen(N_ARQUIVO,"rb");
 
+    //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
         exit(1);
@@ -94,20 +99,26 @@ void le_arquivo(FILE *arquivo){
     fclose(arquivo);
 }
 
+//Função: Escreve no arquivo principal um registro na forma |e|reg, o arquivo deve necessariamente estar aberto em algum modo de escrita
 void escreve_arquivo(FILE *arquivo,Reg registro,char existe){
 
+    //Declaração da variavel local
     char delimitador = '|';
 
+    //Escrever no arquivo principal de dados
     fwrite(&delimitador,sizeof(delimitador),1,arquivo);
     fwrite(&existe,sizeof(delimitador),1,arquivo);
     fwrite(&delimitador,sizeof(delimitador),1,arquivo);
 	fwrite(&registro,sizeof(Reg),1,arquivo);
 
 }
+//Função: Escreve no arquivo secundario um registro na forma |e|reg, o arquivo deve necessariamente estar aberto em algum modo de escrita
 void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe){
 
+    //Declaração da variavel local
     char delimitador = '|';
 
+    //Escreve no arquivo secundário de dados
     fwrite(&delimitador,sizeof(delimitador),1,arquivo);
     fwrite(&existe,sizeof(delimitador),1,arquivo);
     fwrite(&delimitador,sizeof(delimitador),1,arquivo);
@@ -119,23 +130,31 @@ void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe){
 4.Busca dos campos dos registro, as funções a seguir buscam os campos do registro Reg,nos arquivos, tanto no arquivo principal de dados, 
 como nos arquivos secundários
 */
+
+//Função: Recupera um registro que é o n-esimo registro no arquivo, são contabilizados apenas registros que existem logicamente
 int recupera_registro(FILE *arquivo,int valor){
 
+    //Declarações da variaveis local
     Reg registro;
     int contador=0;
     int achou = FALSE;
     char existe;
     char delimitador;
 
+    //Abre o arquivo no modo leitura
     arquivo = fopen(N_ARQUIVO,"rb");
 
+    //Verifica se foi aberto corretamente
     if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
         exit(1);
     }
 
     //Arquivo necessariaente precisa estar em modo de leitura
-     while(!achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
+     while(!achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& 
+     (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
+        
+        //Acho o arquivo de numero n
         if(delimitador == '|' && existe == '1' && contador == valor){
             printf("\nRegistro encontrado:\n");
             ml(contador,TRUE);
@@ -145,6 +164,8 @@ int recupera_registro(FILE *arquivo,int valor){
             printf("\n");
             achou = TRUE;
         }
+
+        //Incremente se o registro que foi lido existe logicamente
         if(existe=='1')
             contador++;
     }
@@ -158,15 +179,20 @@ int recupera_registro(FILE *arquivo,int valor){
     return TRUE;
 }
 
+//Função: Busca a chave primária de maneira sequencial no arquivo de dados primários, e exibe na tela o registro caso encontre
 int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
+    
+    //Declarações da variaveis local
     Reg registro;
     int contador=0;
     int achou = FALSE;
     char existe;
     char delimitador;
 
+    //Abre o arquivo no modo de leitura
     arquivo = fopen(N_ARQUIVO,"rb");
 
+    //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
         exit(1);
@@ -174,8 +200,11 @@ int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
 
     //Arquivo necessariaente precisa estar em modo de leitura
    while( !achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
+        
+        //Acho a chave desejada, e esta existe logicamente
         if(delimitador == '|' && existe == '1' && registro.key == key){
             
+            //Verifica se é necessário printar
             if(booleano){
             printf("\nChave encontrada:\n");
             ml(contador,TRUE);
@@ -190,9 +219,15 @@ int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
         if(existe == '1')
             contador++;
     }
+
+    //Salva a posição física do registro no arquivo
     int aux = ftell(arquivo)-(sizeof(Reg)+3);
     *pos = (aux / (sizeof(Reg)+3));
+
+    //Fecha o arquivo
     fclose(arquivo);
+
+    //Retornos
     if(!achou){
         return FALSE;
     }
@@ -200,17 +235,22 @@ int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
     return TRUE;
 }
 
+//Função: Busca a chave secundaria, no arquivo secundário, e exibe na tela ,caso encontre, todos os registros com o nome n
 int  busca_fName(FILE *arquivo,char fName[10]){
     
     printf("Procurando pelo nome %s\n\n",fName);
 
+    //Declarações da variaveis local
     cSec registro;
     char existe;
     char delimitador;
     int achou = FALSE;
     int fim = FALSE;
 
+    //Abre o arquivo em modo de leitura
     arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+
+    //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
         exit(1);
@@ -222,41 +262,62 @@ int  busca_fName(FILE *arquivo,char fName[10]){
     fseek(arquivo,0,SEEK_SET);
     int qtdItens = pos / (sizeof(cSec)+3);
 
+    //Variaveis de controle da busca binária
     int e = -1;
     int d = qtdItens;
     int m = (e+d)/2;
 
+    //Tamanho de um registro, contado com os delimitadores
     int pulo = sizeof(cSec)+3;
+
+    //Posição corrente ajustada
     fseek(arquivo,m*pulo,SEEK_SET);
 
+    //Inicio da busca
     while(!fim && !achou &&(fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& 
     (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(cSec),1,arquivo) == TRUE)){
 
             int c = compara(fName,registro.nome);
+
+            //Vai para a esquerda
             if(c < 0){
                 d = m;
             }
+
+            //Vai para a direita
             else if(c > 0){
                 e = m;
             }
+
+            //Achou
             else{
+                //Existe logicamente
                 if(existe == '1')
                 achou = TRUE;
+
+                //Nao existe logicamente
                 else
                 fim = TRUE;
             }
 
+            //Condição de parada
             if(e >= d-1)
                 fim = TRUE;
 
+            //Calculo do novo meio
             m = (e+d)/2;
             fseek(arquivo,m*pulo,SEEK_SET);
     }
+
+    //Fecha  o arquivo
     fclose(arquivo);
+
+    //Retornos
     if(!achou || fim){
         return FALSE;
     }
 
+    //Prints do(s) registros
     printf("Registro(s) com o nome: %s abaixo: ",registro.nome);
     int cont=0;
     while(registro.i[cont] != -1){
@@ -271,17 +332,20 @@ int  busca_fName(FILE *arquivo,char fName[10]){
 /*
 5.As funções abaixo estão relacionados a verificarem a presença de remoção lógica nos 3 arquivos existentes
 */
+
+//Função:Verifica a existencia de remoções lógicas no arquivo principal
 int verifica(FILE *arquivo){
 
-    //Essa função verifica se há algum espaço lógico para ser reaproveitado, e com se trata de regisros fixos de campos fixos o reaproveitamento é simples
+    //Declarações da variaveis local
     Reg registro;
     int achou = FALSE;
     char existe;
     char delimitador;
 
-    //Arquivo necessariaente precisa estar em modo de leitura
+    //Arquivo necessariaente precisa estar em modo de leitura, mas é aberto em outra função
     while( !achou && (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(Reg),1,arquivo) == TRUE)){
         
+        //Achou um registro que foi removido logicamente
         if(existe == '0')
             achou = TRUE;
         
@@ -293,27 +357,37 @@ int verifica(FILE *arquivo){
     return TRUE;
 }
 
+//Função:Verifica a existencia de remoções lógicas no arquivo secundário
 int verifica_indice_secundario(FILE *arquivo,int *pos){
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
-
+    
+    //Declarações da variaveis local
     cSec registro;
     char existe;
     char delimitador;
-
     int achou = FALSE;
+    
 
+    //Abre o arquivo no modo leitura
+    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+
+
+    //Inicio da busca de um registro removido
     while(!achou && fread(&delimitador,sizeof(delimitador),1,arquivo) && fread(&existe,sizeof(delimitador),1,arquivo) &&
     fread(&delimitador,sizeof(delimitador),1,arquivo) && fread(&registro,sizeof(cSec),1,arquivo)){
 
+        //Achou um registro que foi removido logicamente
         if(existe == '0')
             achou = TRUE;
     }
 
+    //Valores de retorno
     if(!achou)
         return FALSE;
 
+    //Salva a posição do registro na variavel que foi passado por referencia
     *pos = ftell(arquivo) - (sizeof(cSec)+3);
 
+    //Fecha o arquivo
     fclose(arquivo);
 
     return TRUE;
@@ -324,12 +398,17 @@ int verifica_indice_secundario(FILE *arquivo,int *pos){
 */
 int tamanho_disponivel(FILE *arquivo,char fName[10]){
 
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+   //Declarações da variaveis local
     int achou = FALSE;
     char delimitador;
     char existe;
     cSec registro;
+   
+   //Abre o arquivo no modo leitura
+    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+   
 
+    //INicio da busca pela chave NAME, e verificação se existe tamanho disponivel
     while(!achou && (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& 
     (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&registro,sizeof(cSec),1,arquivo) == TRUE)){
 
@@ -338,11 +417,14 @@ int tamanho_disponivel(FILE *arquivo,char fName[10]){
             fclose(arquivo);
             return TRUE;
         }
+        //Achou
         else if(c == 0)
             achou = TRUE;
     }
 
     fclose(arquivo);
+
+    //Verifica se na posição 19, que é a ultima posição está o valor -1, que indica que a lista está cheia, com 19 valores
     if(achou){
         if(registro.i[19] != -1)
             return TRUE;
@@ -351,25 +433,16 @@ int tamanho_disponivel(FILE *arquivo,char fName[10]){
     }
 
     return TRUE;
-
-
 }
 /*
-
-8. As funções abaixo estão atreladas a inserção no arquivo de chaves secundárias, tão como a inserção de fato, como o ajuste, na ocorrencia de alguma remoção
+7. As funções abaixo estão atreladas a inserção no arquivo de chaves secundárias, tão como a inserção de fato, como o ajuste, na ocorrencia de alguma remoção
 lógica
 */
+
+//Função: A inserção principal no arquivo secundário
 void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remocao){
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
-
-    if(arquivo == NULL){
-        printf("OPS, algo deu errado, encerrando a execucao...\n");
-        exit(1);
-    }
-
-    if(arquivo == NULL)
-        return;
-
+    
+    //Declarações da variaveis local
     cSec registro;
     int contador=0;
     int achou = FALSE;
@@ -377,8 +450,17 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
     char existe;
     long int pos;
     int repetido = FALSE;
-   // int ultimo = FALSE;
     
+    //Abre o arquivo no modo rb+
+    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
+
+    //Verifica se  o arquivo foi aberto corretamente
+    if(arquivo == NULL){
+        printf("OPS, algo deu errado, encerrando a execucao...\n");
+        exit(1);
+    }
+    
+    //Inicio da busca da posição que deve ser inserido
     while( !achou && (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&
     (fread(&registro,sizeof(cSec),1,arquivo) == TRUE)){
 
@@ -398,16 +480,21 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
         }
     }
 
+    //Declarações da variaveis local
     cSec registro_auxiliar;
     char insercao = '1';
     delimitador = '|';
+
+
     strcpy(registro_auxiliar.nome,nome);
 
-    
+    //Caso seja a primeira ocorrencia da chave NAME no arquivo
     if(!repetido){
         registro_auxiliar.i[0] = indice;
         registro_auxiliar.i[1] = -1;
     }
+
+    //Caso não seja
     else{
         registro_auxiliar = registro;
         //A chave secundaria esta repetida, logo so basta reescrever o vetor
@@ -468,7 +555,9 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
     fclose(arquivo);    
 }
 
-
+/*Função: Este procedimento, realiza o ajuste no arquivo secundário, colocando o registro que foi removido logicamente, na ultima posição do arquivo, e dessa
+forma, este não será escrito na inserção, que é a função chamada após esta.
+*/
 void ajusta_insercao_secundario(FILE *arquivo,int pos){
 
      /*Existe um registro que foi removido logicamente, logo esse espaço deve ser reaproveitado e inserido um novo registro em seu lugar,
@@ -486,7 +575,7 @@ void ajusta_insercao_secundario(FILE *arquivo,int pos){
     int pos_corr = pos + sizeof(cSec)+3;
     fseek(arquivo,pos_corr,SEEK_SET);
 
-
+    //Declarações da variaveis local
     cSec registro;
     char delimitador,existe;
 
@@ -510,17 +599,13 @@ void ajusta_insercao_secundario(FILE *arquivo,int pos){
 
 }
 /*
-9.As funções abaixo são relacionadas a remoção de arquivos de chave secundaria
+8.As funções abaixo são relacionadas a remoção de arquivos de chave secundaria
 */
+
+//Função: Remove o registro do arquivo secundário
 void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
 
-   arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
-   
-   if(arquivo == NULL){
-        printf("OPS, algo deu errado, encerrando a execucao...\n");
-        exit(1);
-    }
-
+    //Declarações da variaveis local
     int pos;
     int achou = FALSE;
     char delimitador;
@@ -529,6 +614,15 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
     int contador=0;
     int sozinho=TRUE;
     int sair = FALSE;
+
+    //Abre o arquivo no modo rb+
+   arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
+   
+   //Verifica se o arquivo foi aberto corretamente
+   if(arquivo == NULL){
+        printf("OPS, algo deu errado, encerrando a execucao...\n");
+        exit(1);
+    }
 
     //Apenas trocar o byteoffset para 0
    while(!sair && !achou && (fread(&delimitador,sizeof(char),1,arquivo)==TRUE) &&(fread(&existe,sizeof(char),1,arquivo)==TRUE)&& 
@@ -559,7 +653,6 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
         return;
    }
 
-    //printf("epaaaaaaaaaaa");
     fseek(arquivo,pos,SEEK_SET);
     if(!sozinho)
         existe = '1';
@@ -579,7 +672,7 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
     return;  
 }
 /*
-10.A função abaixo é a inserção geral
+9.A função abaixo é a inserção geral
 */
 int insere(FILE *arquivo,Reg registro){
 
@@ -642,7 +735,7 @@ int insere(FILE *arquivo,Reg registro){
     return TRUE;
 }
 /*
-11.A função abaixo é a remoção em geral
+10.A função abaixo é a remoção em geral
 */
 int remove_logico(FILE *arquivo,long int key){
 
@@ -680,8 +773,10 @@ int remove_logico(FILE *arquivo,long int key){
 
 
 /*
-12.As funções abaixo são complementares em relação as ultilizadas acima, algumas são ultilizadas na main, outras são chamadas por funções
+11.As funções abaixo são complementares em relação as ultilizadas acima, algumas são ultilizadas na main, outras são chamadas por funções
 */
+
+//Função:Compara duas strings para determinar qual vem antes na ordem alfabetica
 int compara(char n[10],char p[10]){
 
     char aux1[10];
@@ -721,6 +816,8 @@ int compara(char n[10],char p[10]){
 
     return strcmp(aux1,aux2);
 }
+
+//Função:Exibe a lista do arquivo secundário
 void print_arq_secundario(){
 
     FILE *arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
