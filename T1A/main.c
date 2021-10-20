@@ -30,7 +30,7 @@ int main(){
 
         //Cria o arquivo
         if(continuar == 0){
-            if(criaArquivo(N_ARQUIVO))
+            if(criar_arquivo(NOME_ARQUIVO))
                 printf("Arquivo criado com sucesso\n");
             else{
                 printf("OPS, algo deu errado, encerrando a execucao...\n");
@@ -47,7 +47,7 @@ int main(){
 
             
             if(insere(arquivo,registro))
-                printf("\nRegistro adicionado ao arquivo %s\n",N_ARQUIVO);
+                printf("\nRegistro adicionado ao arquivo %s\n",NOME_ARQUIVO);
             else{
                 printf("\nOPS, algo deu errado, a chave %ld ja esta inserida\n",registro.key);
             }
@@ -55,8 +55,8 @@ int main(){
 
         //Mostra os registro
         else if(continuar == 2){
-            printf("\nRegistros do arquivo %s\n",N_ARQUIVO);
-            le_arquivo(arquivo);
+            printf("\nRegistros do arquivo %s\n",NOME_ARQUIVO);
+            ler_arquivo(arquivo);
         }
 
         //Mostra o registro n

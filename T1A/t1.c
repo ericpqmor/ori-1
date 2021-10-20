@@ -18,7 +18,7 @@ FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
 1.A função abaixo tem como objetivo, a criação do arquivo principal de dados, pode ser usada tanto para resetar, quanto para criar um novo arquivo, com nome
 fixo
 */
-int criaArquivo(char *n_arq){
+int criar_arquivo(char *n_arq){
 
     FILE *arquivo = fopen(n_arq,"wb+");
 
@@ -80,7 +80,7 @@ void ml(int valor,int x){
 */
 
 //Função: Ler os registros que existem logicamente de maneira sequencial, e exibi-los na tela
-void le_arquivo(FILE *arquivo){
+void ler_arquivo(FILE *arquivo){
 
     //Declaração das variáveis locais
     Reg registro;
@@ -89,7 +89,7 @@ void le_arquivo(FILE *arquivo){
     char delimitador;
 
     //Abertura do arquivo principal em modo r
-    arquivo = fopen(N_ARQUIVO,"rb");
+    arquivo = fopen(NOME_ARQUIVO,"rb");
 
     //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
@@ -112,7 +112,7 @@ void le_arquivo(FILE *arquivo){
 }
 
 //Função: Escreve no arquivo principal um registro na forma |e|reg, o arquivo deve necessariamente estar aberto em algum modo de escrita
-void escreve_arquivo(FILE *arquivo,Reg registro,char existe){
+void escrever_arquivo(FILE *arquivo,Reg registro,char existe){
 
     //Declaração da variavel local
     char delimitador = '|';
@@ -125,7 +125,7 @@ void escreve_arquivo(FILE *arquivo,Reg registro,char existe){
 
 }
 //Função: Escreve no arquivo secundario um registro na forma |e|reg, o arquivo deve necessariamente estar aberto em algum modo de escrita
-void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe){
+void escrever_arquivo_secundario(FILE *arquivo,cSec registro, char existe){
 
     //Declaração da variavel local
     char delimitador = '|';
@@ -154,7 +154,7 @@ int recupera_registro(FILE *arquivo,int valor){
     char delimitador;
 
     //Abre o arquivo no modo leitura
-    arquivo = fopen(N_ARQUIVO,"rb");
+    arquivo = fopen(NOME_ARQUIVO,"rb");
 
     //Verifica se foi aberto corretamente
     if(arquivo == NULL){
@@ -202,7 +202,7 @@ int busca_key(FILE *arquivo,long int key,int *pos,int booleano){
     char delimitador;
 
     //Abre o arquivo no modo de leitura
-    arquivo = fopen(N_ARQUIVO,"rb");
+    arquivo = fopen(NOME_ARQUIVO,"rb");
 
     //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
@@ -260,7 +260,7 @@ int  busca_fName(FILE *arquivo,char fName[10]){
     int fim = FALSE;
 
     //Abre o arquivo em modo de leitura
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb");
 
     //Verifica se o arquivo foi aberto corretamente
     if(arquivo == NULL){
@@ -380,7 +380,7 @@ int verifica_indice_secundario(FILE *arquivo,int *pos){
     
 
     //Abre o arquivo no modo leitura
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb");
 
 
     //Inicio da busca de um registro removido
@@ -417,7 +417,7 @@ int tamanho_disponivel(FILE *arquivo,char fName[10]){
     cSec registro;
    
    //Abre o arquivo no modo leitura
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb");
    
 
     //INicio da busca pela chave NAME, e verificação se existe tamanho disponivel
@@ -464,7 +464,7 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
     int repetido = FALSE;
     
     //Abre o arquivo no modo rb+
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb+");
 
     //Verifica se  o arquivo foi aberto corretamente
     if(arquivo == NULL){
@@ -478,7 +478,7 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
 
         /* O metodo compara tem os seguintes resultados:
         Caso for negativo, a string nome é maior(vem antes) da string registro.nome, logo deve entrar na condição para parar
-        Caso for positivo, a string registro.nome(vem atnes) da string nome, logo não se deve parar
+        Caso for positivo, a string registro.nome(vem antes) da string nome, logo não se deve parar
         Zero, caso for igual, e também não deve parar
         */
         if(compara(nome,registro.nome) == 0){
@@ -520,7 +520,7 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
         pos = pos - (sizeof(cSec)+3);//vai para o ultimo byte que está antes do primeiro |
         fseek(arquivo,pos,SEEK_SET);
         //Novo registro adicionado
-        escreve_arquivo_secundario(arquivo,registro_auxiliar,insercao);
+        escrever_arquivo_secundario(arquivo,registro_auxiliar,insercao);
         if(repetido){
             fclose(arquivo);
             return;
@@ -534,10 +534,10 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
             /*Isso significa que tem remoção e essa remoção ou houve em um elemento que estava sozinho ou no ultimo elemento
              logo a posição corrente do arquivo estará em uma posição boa, pois estará no final do registro*/
             fseek(arquivo,-(sizeof(cSec)+3),SEEK_CUR); 
-            escreve_arquivo_secundario(arquivo,registro_auxiliar,insercao);
+            escrever_arquivo_secundario(arquivo,registro_auxiliar,insercao);
         }
         else{
-            escreve_arquivo_secundario(arquivo,registro_auxiliar,insercao);
+            escrever_arquivo_secundario(arquivo,registro_auxiliar,insercao);
         }
         fclose(arquivo);
         return; //quer dizer, que foi o primeiro indice a ser inserido, ou na ultima posicao, logo não é necessario reorganizar
@@ -557,7 +557,7 @@ void insere_arq_secundario(FILE *arquivo,char nome[10],int indice,int tem_remoca
         if(!acabou || (pos == ftell(arquivo) && !tem_remocao) ){
             fseek(arquivo,pos,SEEK_SET);
 
-            escreve_arquivo_secundario(arquivo,registro,existe);
+            escrever_arquivo_secundario(arquivo,registro,existe);
 
             existe = insercao;
             registro = registro_auxiliar;
@@ -576,7 +576,7 @@ void ajusta_insercao_secundario(FILE *arquivo,int pos){
     para reorganizar, esse registro deve ir para a ultima posição do vetor, e isso será feito subindo todos os registro abaixo em uma posição, e nesse caso,
     o ultimo registro estará repetido, e isso não tem problema, pois no final ele será substituido por ele mesmo
 */
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb+");
 
     if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
@@ -601,7 +601,7 @@ void ajusta_insercao_secundario(FILE *arquivo,int pos){
         if(!acabou){
             fseek(arquivo,-2*(sizeof(cSec)+3),SEEK_CUR);
 
-            escreve_arquivo_secundario(arquivo,registro,existe);
+            escrever_arquivo_secundario(arquivo,registro,existe);
 
             fseek(arquivo,sizeof(cSec)+3,SEEK_CUR);
         }
@@ -628,7 +628,7 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
     int sair = FALSE;
 
     //Abre o arquivo no modo rb+
-   arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb+");
+   arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb+");
    
    //Verifica se o arquivo foi aberto corretamente
    if(arquivo == NULL){
@@ -677,7 +677,7 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
         contador++;
     }
 
-    escreve_arquivo_secundario(arquivo,registro,existe);
+    escrever_arquivo_secundario(arquivo,registro,existe);
 
     fclose(arquivo);
 
@@ -689,7 +689,7 @@ void remove_arq_secundario(FILE *arquivo,char nome[10],int indice){
 int insere(FILE *arquivo,Reg registro){
 
     //Cria os arquivos caso eles não existam
-    arquivo = fopen(N_ARQUIVO_SECUNDARIO,"ab");
+    arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"ab");
      if(arquivo == NULL){
         printf("OPS, algo deu errado, encerrando a execucao...\n");
         exit(1);
@@ -704,27 +704,27 @@ int insere(FILE *arquivo,Reg registro){
     if(!tamanho_disponivel(arquivo,registro.nome))
         return FALSE;
 
-    arquivo = fopen(N_ARQUIVO,"rb");
+    arquivo = fopen(NOME_ARQUIVO,"rb");
     //Houve remocao lógica
     if(verifica(arquivo)){
 
         pos = ftell(arquivo); //guarda posicao
 
         fclose(arquivo);
-        arquivo = fopen(N_ARQUIVO,"rb+"); //abre o arquivo no modo rb+
+        arquivo = fopen(NOME_ARQUIVO,"rb+"); //abre o arquivo no modo rb+
 
         fseek(arquivo,pos,SEEK_SET);
 
         //Trocar o existe de 0 para 1
         fseek(arquivo,-sizeof(Reg)-3,SEEK_CUR);//Vai para algum lugar
-        escreve_arquivo(arquivo,registro,'1');
+        escrever_arquivo(arquivo,registro,'1');
     }
     //Nao houve remocao lógica
     else{
         fclose(arquivo);
 
-        arquivo = fopen(N_ARQUIVO,"ab"); //abre o arquivo no modo append
-        escreve_arquivo(arquivo,registro,'1');
+        arquivo = fopen(NOME_ARQUIVO,"ab"); //abre o arquivo no modo append
+        escrever_arquivo(arquivo,registro,'1');
     }
 
 
@@ -759,7 +759,7 @@ int remove_logico(FILE *arquivo,long int key){
 
     Reg registro;
 
-    arquivo = fopen(N_ARQUIVO,"rb");
+    arquivo = fopen(NOME_ARQUIVO,"rb");
     pos *= (sizeof(Reg)+3);
 
     fseek(arquivo,3+pos,SEEK_SET);
@@ -769,10 +769,10 @@ int remove_logico(FILE *arquivo,long int key){
    
    fclose(arquivo);
 
-    arquivo = fopen(N_ARQUIVO,"rb+"); //abre o arquivo no modo rb+
+    arquivo = fopen(NOME_ARQUIVO,"rb+"); //abre o arquivo no modo rb+
 
     fseek(arquivo,pos,SEEK_SET);
-    escreve_arquivo(arquivo,registro,'0');
+    escrever_arquivo(arquivo,registro,'0');
 
     fclose(arquivo);
 
@@ -832,7 +832,7 @@ int compara(char n[10],char p[10]){
 //Função:Exibe a lista do arquivo secundário
 void print_arq_secundario(){
 
-    FILE *arquivo = fopen(N_ARQUIVO_SECUNDARIO,"rb");
+    FILE *arquivo = fopen(NOME_ARQUIVO_SECUNDARIO,"rb");
 
     cSec registro;
     char existe;

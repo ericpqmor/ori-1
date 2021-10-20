@@ -25,8 +25,8 @@ FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
 #define FALSE 0
 
 //Variáveis globais de nomes de arquivo
-#define N_ARQUIVO "arquivo.bin"
-#define N_ARQUIVO_SECUNDARIO "arquivo_secundaria.bin"
+#define NOME_ARQUIVO "arquivo.bin"
+#define NOME_ARQUIVO_SECUNDARIO "arquivo_secundaria.bin"
 
 
 
@@ -59,16 +59,16 @@ typedef struct secundaria{
 
 
 //Cria arquivo
-int criaArquivo(char *n_arq);
+int criar_arquivo(char *n_arq);
 
 //Escreve no arquivo principal
-void escreve_arquivo(FILE *arquivo,Reg registro,char existe);
+void escrever_arquivo(FILE *arquivo,Reg registro,char existe);
 
 //Escreve no arquivo secundário
-void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe);
+void escrever_arquivo_secundario(FILE *arquivo,cSec registro, char existe);
 
 //Lê o arquivo principal
-void le_arquivo(FILE *arquivo);
+void ler_arquivo(FILE *arquivo);
 
 //Métodos de impressão
 void print_reg(Reg registro);

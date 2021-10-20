@@ -18,8 +18,8 @@ FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
 #define TRUE 1
 #define FALSE 0
 
-#define N_ARQUIVO "arquivo.bin"
-#define N_ARQUIVO_SECUNDARIO "arquivo_secundaria.bin"
+#define NOME_ARQUIVO "arquivo.bin"
+#define NOME_ARQUIVO_SECUNDARIO "arquivo_secundaria.bin"
 
 
 
@@ -51,12 +51,12 @@ typedef struct secundaria{
 
 
 
-int criaArquivo(char *n_arq);
+int criar_arquivo(char *n_arq);
 
 
-void escreve_arquivo(FILE *arquivo,Reg registro,char existe,int v[],int tam,int sobrouEspaco);
-void escreve_arquivo_secundario(FILE *arquivo,cSec registro, char existe);
-void le_arquivo(FILE *arquivo);
+void escrever_arquivo(FILE *arquivo,Reg registro,char existe,int v[],int tam,int sobrouEspaco);
+void escrever_arquivo_secundario(FILE *arquivo,cSec registro, char existe);
+void ler_arquivo(FILE *arquivo);
 
 //Métodos de impressão
 void print_reg(Reg registro);

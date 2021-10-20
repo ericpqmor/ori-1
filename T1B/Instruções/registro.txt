@@ -81,7 +81,7 @@ booleano - variavel que afirma se terá algum print ou não, útil para a remoç
 
 Como vai funcionar:
 
-Inicialmente, deve-se abrir o arquivo no modo r(O arquivo N_ARQUIVO), então inicia-se a leitura, do modo padrão igualmente ao que acontece na função leitura,
+Inicialmente, deve-se abrir o arquivo no modo r(O arquivo NOME_ARQUIVO), então inicia-se a leitura, do modo padrão igualmente ao que acontece na função leitura,
 entretanto como se quer a chave key, ela esta no primeiro campo do registro, logo é muito simples obté-la, deve-se ler:
 
 O #|1|tam|tam_key|KEY, caso for diferente de key, então deve-se avançar até o próximo registro, para isso pode-se ultilizar o campo tam, que representa o tamanho
