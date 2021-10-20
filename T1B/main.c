@@ -82,6 +82,8 @@ int main(){
             
             if(!remove_logico(arquivo,key))
                 printf("\nOPS, algo deu errado, nao existe a chave %ld...\n",key);
+            else
+                printf("\nA chave %ld foi removida logicamente do arquivo com sucesso\n",key);
         }
 
         else if(continuar == 6)
