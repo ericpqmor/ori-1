@@ -1,5 +1,0 @@
-Oque foi feito
-
-14/10:
-
-Foi realizado o método de escrita, e leitura dos dados do registro, e ambos funcionam corretamente.
