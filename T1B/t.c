@@ -1,3 +1,15 @@
+/**
+NOME: Gabriel Meirelles Carvalho Orlando
+RA: 790728
+
+NOME: Eric Pereira Queiroz Moreira		
+RA: 799662
+
+CURSO: Ciencia da Computação
+DATA: 19/10/2021
+FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
+*/
+
 #include "t.h"
 
 
@@ -221,6 +233,7 @@ void ler_arquivo(FILE *arquivo){
             printf("%c%c%c%c%d%c\n",inicio_reg,delimitador,existe,delimitador,tam,delimitador);
             print_reg(registro);
             ml(contador,0);
+            sleep(1);
 
             contador++;
         }      
