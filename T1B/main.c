@@ -5,7 +5,7 @@ RA: 790728
 NOME: Eric Pereira Queiroz Moreira		
 RA: 799662
 
-CURSO: Ciencia da Computação
+CURSO: Ciência da Computação
 DATA: 19/10/2021
 FLAGS: -std=c99 -Wall -Werror -Werror=vla -pedantic-errors -g -lm
 */
